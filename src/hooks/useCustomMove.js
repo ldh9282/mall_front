@@ -1,4 +1,4 @@
-import { useCallback } from "react";
+import { useCallback, useState } from "react";
 import { createSearchParams, useNavigate, useSearchParams } from "react-router-dom";
 
 const getNum = (param, defaultValue) => {
@@ -11,12 +11,19 @@ const getNum = (param, defaultValue) => {
 
 const useCustomMove = () => {
     const navigate = useNavigate();
+
+    const [refresh, setRefresh] = useState(false);
+
+
     const [queryParams] = useSearchParams();
 
     
-    const page = getNum(queryParams.get("page"), 1);
-    const size = getNum(queryParams.get("size"), 10);
     
+    let page = getNum(queryParams.get("page"), 1);
+    let size = getNum(queryParams.get("size"), 10);
+    
+    const queryDefault = createSearchParams({ page, size }).toString();
+
     const moveToList = useCallback((pageParam) => {
         let queryStr = ""
         
@@ -36,8 +43,15 @@ const useCustomMove = () => {
     
     const moveToModify = useCallback((tno) => navigate({ pathname: `/todo/modify/${tno}` }), [page, size])
 
+    const moveToRead = (num) => {
+        console.log(queryDefault);
+        navigate({
+            pathname: `../read/${num}`,
+            search: queryDefault,
+        })
+    }
 
-    return { moveToList, moveToModify, page, size };
+    return { moveToList, moveToModify, moveToRead, page, size, refresh };
 
     
 }
